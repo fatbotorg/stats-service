@@ -15,14 +15,16 @@ export class WorkoutsService {
     async getWorkoutsByWeekday(groupId: number) {
         return await this.workoutsRepository
             .createQueryBuilder('workout')
-            .select('user.id', 'userId')
-            .addSelect('strftime(\'%w\', workout.createdAt) AS weekday')
-            .addSelect('COUNT(workout.id)', 'rowCount')
-            .addSelect('user.nickName', 'firstName')
+            .select('strftime(\'%w\', workout.createdAt) AS weekday')
+            .addSelect('COUNT(workout.id)', 'workoutsCount')
+            .addSelect('user.id', 'userId')
+            .addSelect('user.nickName', 'nickName')
+            .addSelect('user.name', 'name')
             .where('workout.groupId = :groupId', { groupId })
+            .andWhere('user.active = 1')
             .andWhere('workout.createdAt >= date(\'now\', \'-30 days\')')
             .innerJoin(User, 'user', 'user.id = workout.userId')
-            .groupBy('user.id, weekday')
+            .groupBy('userId, weekday')
             .getRawMany();
     }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ApiCreatedResponse } from '@nestjs/swagger';
 import { WorkoutsService } from '@app/workouts/workouts.service';
 import { Workout } from '@app/workouts/workout.entity';
@@ -7,12 +7,12 @@ import { Workout } from '@app/workouts/workout.entity';
 export class WorkoutsController {
     constructor(private readonly workoutService: WorkoutsService) {}
 
-    @Get()
+    @Get('/weekday')
     @ApiCreatedResponse({
-        description: 'Get All Workouts',
+        description: 'Get Workouts by weekday',
         type: [Workout]
     })
-    async getAll() {
-        return await this.workoutService.getAll();
+    async getWorkoutsByWeekday(@Query('group_id') groupId: number) {
+        return await this.workoutService.getWorkoutsByWeekday(groupId)
     }
 }

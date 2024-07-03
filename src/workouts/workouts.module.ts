@@ -7,6 +7,7 @@ import { Workout } from '@app/workouts/workout.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Workout])],
   providers: [WorkoutsService],
-  controllers: [WorkoutsController]
+  controllers: [WorkoutsController],
+  exports: [WorkoutsService]
 })
 export class WorkoutsModule {}

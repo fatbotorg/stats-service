@@ -14,11 +14,20 @@ export class StatsController {
         description: 'Get Workouts by weekday'
     })
     async getWorkoutsByWeekday(@Query('group_id') groupId: number) {
-        await this.statsService.getWorkoutsByWeekday(groupId)
-        return {
-            success: true,
-            message: 'Workouts by weekday',
-            error: null
+        try {
+            await this.statsService.getWorkoutsByWeekday(groupId)
+            return {
+                success: true,
+                message: 'Workouts by weekday',
+                error: null
+            }
+        }
+        catch (e) {
+            return {
+                success: false,
+                message: 'Error getting workouts by weekday',
+                error: e
+            }
         }
     }
 }

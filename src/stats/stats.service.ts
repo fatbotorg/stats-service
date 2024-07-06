@@ -76,6 +76,56 @@ export class StatsService {
         return response.data;
     }
 
+    async getAvgWorkoutsPerGroup(period: number = 7) {
+        let dataSet = [];
+        const workouts = await this.workoutsService.getWorkoutsByGroups(period)
+        for (let i = 0; i < workouts.length; i++) {
+            const workout = workouts[i];
+            dataSet.push({
+                label: workout.title,
+                borderColor: this.getRandomRgbColor(),
+                fill: false,
+                data: [workout.avg_workouts_per_user]
+            });
+        }
+
+        const chart = {
+            type: 'bar',
+            data: {
+                labels: null,
+                datasets: dataSet
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: `Avg workouts per group (past ${period} days)`,
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 1
+                        }
+                    }]
+                }
+            }
+        }
+
+        const body= {
+            "version": "2",
+            "backgroundColor": "white",
+            "width": 500,
+            "height": 300,
+            "devicePixelRatio": 1.0,
+            "format": "png",
+            "chart": chart
+        }
+
+        const response = await axios.post('https://quickchart.io/chart', body, {responseType: 'arraybuffer'});
+        await writeFile(process.env.ASSETS_PATH + `chart.png`, response.data)
+        return response.data;
+    }
+
     private getRandomRgbColor() {
         const r = Math.floor(Math.random() * 256); // Random number between 0 and 255 for red
         const g = Math.floor(Math.random() * 256); // Random number between 0 and 255 for green

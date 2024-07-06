@@ -29,20 +29,18 @@ export class WorkoutsService {
             .getRawMany();
     }
 
-    async getWorkoutsByGroups() {
+    async getWorkoutsByGroups(period: number = 7) {
         return await this.workoutsRepository
             .createQueryBuilder('workout')
             .select('group.id', 'id')
             .addSelect('group.title', 'title')
             .addSelect('AVG(user_workout_count)', 'avg_workouts_per_user')
-            .addSelect('SUM(user_workout_count)', 'total_workouts')
             .from(subQuery => {
                 return subQuery
                     .select('workout.groupId', 'group_id')
-                    .addSelect('workout.userId', 'user_id')
                     .addSelect('COUNT(*)', 'user_workout_count')
                     .from(Workout, 'workout')
-                    .where('workout.createdAt >= :startDate', { startDate: new Date(new Date().setDate(new Date().getDate() - 7)) })
+                    .where('workout.createdAt >= :startDate', { startDate: new Date(new Date().setDate(new Date().getDate() - period)) })
                     .groupBy('workout.groupId, workout.userId');
             }, 'user_workouts')
             .innerJoin(Group, 'group', 'user_workouts.group_id = group.id')

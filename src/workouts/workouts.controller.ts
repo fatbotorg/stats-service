@@ -21,7 +21,7 @@ export class WorkoutsController {
         description: 'Get Avg workouts by groups',
         type: [Workout]
     })
-    async getAvgWorkoutPerGroup() {
-        return await this.workoutService.getWorkoutsByGroups()
+    async getAvgWorkoutPerGroup(@Query('period') period: number) {
+        return await this.workoutService.getWorkoutsByGroups(period)
     }
 }

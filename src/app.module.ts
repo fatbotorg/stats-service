@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { WorkoutsModule } from './workouts/workouts.module';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { GroupsModule } from './groups/groups.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
       namingStrategy: new SnakeNamingStrategy(),
       logging: 'all'
     }),
+    GroupsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

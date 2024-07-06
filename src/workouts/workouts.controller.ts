@@ -15,4 +15,13 @@ export class WorkoutsController {
     async getWorkoutsByWeekday(@Query('group_id') groupId: number) {
         return await this.workoutService.getWorkoutsByWeekday(groupId)
     }
+
+    @Get('/groups')
+    @ApiCreatedResponse({
+        description: 'Get Avg workouts by groups',
+        type: [Workout]
+    })
+    async getAvgWorkoutPerGroup() {
+        return await this.workoutService.getWorkoutsByGroups()
+    }
 }

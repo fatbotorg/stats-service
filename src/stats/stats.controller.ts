@@ -1,8 +1,6 @@
 import { Controller, Get, Query, Res } from '@nestjs/common';
 import { StatsService } from '@app/stats/stats.service';
-import { Response } from 'express';
 import { ApiCreatedResponse } from '@nestjs/swagger';
-import { Workout } from '@app/workouts/workout.entity';
 
 @Controller('stats')
 export class StatsController {

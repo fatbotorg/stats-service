@@ -30,15 +30,37 @@ export class StatsController {
         }
     }
 
+    @Get('/monthly')
+    @ApiCreatedResponse({
+        description: 'Get Workouts monthly'
+    })
+    async getMonthlyWorkouts(@Query('group_id') groupId: number) {
+        try {
+            await this.statsService.getMonthlyWorkouts(groupId)
+            return {
+                success: true,
+                message: 'Workouts monthly',
+                error: null
+            }
+        }
+        catch (e) {
+            return {
+                success: false,
+                message: 'Error getting workouts monthly',
+                error: e
+            }
+        }
+    }
 
     @Get('/avg-workouts-per-group')
     @ApiCreatedResponse({
         description: 'Get Avg workouts by groups',
         type: [Workout]
     })
-    async getAvgWorkoutPerGroup(@Query('period') period: number) {
+    async getAvgWorkoutPerGroup(@Query('period') period: number,
+                                @Query('group_id') groupId: number) {
         try {
-            await this.statsService.getAvgWorkoutsPerGroup(period)
+            await this.statsService.getAvgWorkoutsPerGroup(period, groupId)
             return {
                 success: true,
                 message: 'AVG Workouts by groups',

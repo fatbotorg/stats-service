@@ -16,12 +16,22 @@ export class WorkoutsController {
         return await this.workoutService.getWorkoutsByWeekday(groupId)
     }
 
-    @Get('/groups')
+    @Get('/monthly')
+    @ApiCreatedResponse({
+        description: 'Get Workouts monthly',
+        type: [Workout]
+    })
+    async getMonthlyWorkouts(@Query('group_id') groupId: number) {
+        return await this.workoutService.getMonthlyWorkouts(groupId)
+    }
+
+    @Get('/avg-workouts-per-group')
     @ApiCreatedResponse({
         description: 'Get Avg workouts by groups',
         type: [Workout]
     })
-    async getAvgWorkoutPerGroup(@Query('period') period: number) {
-        return await this.workoutService.getWorkoutsByGroups(period)
+    async getAvgWorkoutPerGroup(@Query('period') period: number,
+                                @Query('group_id') groupId: number) {
+        return await this.workoutService.getAvgWorkoutsByGroups(period, groupId)
     }
 }

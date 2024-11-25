@@ -9,8 +9,22 @@ import { Group } from '@app/groups/group.entity';
 export class WorkoutsService {
     constructor(@InjectRepository(Workout) private workoutsRepository: Repository<Workout>) {}
 
-    async getAll(): Promise<Workout[]> {
-        return await this.workoutsRepository.find();
+    async getMonthlyWorkouts(groupId: number) {
+        const now = new Date();
+        const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0));
+        
+        return await this.workoutsRepository
+            .createQueryBuilder('workout')
+            .select('COUNT(workout.id)', 'workoutsCount')
+            .addSelect('user.id', 'userId')
+            .addSelect('user.nickName', 'nickName')
+            .addSelect('user.name', 'name')
+            .where('workout.groupId = :groupId', { groupId })
+            .andWhere('user.active = 1')
+            .andWhere('workout.createdAt >= :startOfMonth', { startOfMonth })
+            .innerJoin(User, 'user', 'user.id = workout.userId')
+            .groupBy('userId')
+            .getRawMany();
     }
 
     async getWorkoutsByWeekday(groupId: number) {
@@ -29,7 +43,7 @@ export class WorkoutsService {
             .getRawMany();
     }
 
-    async getWorkoutsByGroups(period: number = 7) {
+    async getAvgWorkoutsByGroups(period: number = 7, groupId: number) {
         return await this.workoutsRepository
             .createQueryBuilder('workout')
             .select('group.id', 'id')
@@ -40,11 +54,23 @@ export class WorkoutsService {
                     .select('workout.groupId', 'group_id')
                     .addSelect('COUNT(*)', 'user_workout_count')
                     .from(Workout, 'workout')
-                    .where('workout.createdAt >= :startDate', { startDate: new Date(new Date().setDate(new Date().getDate() - period)) })
+                    .where('workout.groupId = :groupId', { groupId })
+                    .andWhere('workout.createdAt >= :startDate', { startDate: new Date(new Date().setDate(new Date().getDate() - period)) })
                     .groupBy('workout.groupId, workout.userId');
             }, 'user_workouts')
             .innerJoin(Group, 'group', 'user_workouts.group_id = group.id')
             .groupBy('group.id, group.title')
+            .getRawMany();
+    }
+
+    async getAvgWorkoutPerPerson(period: number = 7, groupId: number) {
+        return await this.workoutsRepository
+            .createQueryBuilder('workout')
+            .select('workout.userId', 'userId')
+            .addSelect('COUNT(workout.id)', 'averageWorkouts')
+            .where('workout.groupId = :groupId', { groupId })
+            .andWhere('workout.createdAt >= :startDate', { startDate: new Date(new Date().setDate(new Date().getDate() - period)) })
+            .groupBy('workout.userId')
             .getRawMany();
     }
 }
